@@ -18,7 +18,6 @@ function Home() {
     >
       {/* HERO */}
       <HeroSection />
-
       {/* ABOUT */}
       <AboutSection />
 

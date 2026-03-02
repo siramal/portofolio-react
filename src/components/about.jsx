@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { sectionTransition } from "../animations/variants";
-import fotobg from "../assets/fotome copy.png";
+import fotobg from "../assets/kamalpose.png";
 import CV from "../assets/CV Sirojul Kamal (3).pdf";
 import { FaDownload } from "react-icons/fa";
 import { projects } from "../data/projects";
