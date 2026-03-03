@@ -1,10 +1,10 @@
-
 export const certificates = [
   {
     title: "Belajar Dasar Pemrograman Web",
     issuer: "Dicoding",
     year: "2024",
     file: "/certificates/dicoding1.pdf",
+    thumbnail: "/certificates/dicoding1.pdf",
     type: "pdf",
   },
   {
@@ -12,6 +12,7 @@ export const certificates = [
     issuer: "Dicoding",
     year: "2024",
     file: "/certificates/dicoding2.pdf",
+    thumbnail: "/certificates/dicoding2.pdf",
     type: "pdf",
   },
   {
@@ -19,6 +20,7 @@ export const certificates = [
     issuer: "Dicoding",
     year: "2024",
     file: "/certificates/dicoding3.pdf",
+    thumbnail: "/certificates/dicoding3.pdf",
     type: "pdf",
   },
   {
@@ -26,6 +28,7 @@ export const certificates = [
     issuer: "Dicoding",
     year: "2024",
     file: "/certificates/dicoding4.pdf",
+    thumbnail: "/certificates/dicoding4.pdf",
     type: "pdf",
   },
   {
@@ -33,6 +36,7 @@ export const certificates = [
     issuer: "Dicoding",
     year: "2024",
     file: "/certificates/dicoding5.pdf",
+    thumbnail: "/certificates/dicoding5.pdf",
     type: "pdf",
   },
   {
@@ -40,92 +44,103 @@ export const certificates = [
     issuer: "Mede Media Softika",
     year: "2025",
     file: "/certificates/PKLmede.pdf",
+    thumbnail: "/certificates/PKLmede.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Customer Centricity (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
-    file: "/certificates/Modul Penilaian - Berpusat kepada Pelanggan.pdf",
+    file: "/certificates/wadhwani1.pdf",
+    thumbnail: "/certificates/wadhwani1.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Effective Speaking and Listening Skills (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
-    file: "/certificates/Modul Penilaian - Keterampilan Berbicara Efektif.pdf",
+    file: "wadhwani2.pdf",
+    thumbnail: "/certificates/wadhwani2.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Interpersonal Skills (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Keterampilan Interpersonal.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Keterampilan Interpersonal.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Impactful Writing Skills (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Keterampilan Menulis yang Berdampak.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Keterampilan Menulis yang Berdampak.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Online Communication & Data Security (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Komunikasi Online dan Keamanan Data.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Komunikasi Online dan Keamanan Data.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Self-Management (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Manajemen Diri.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Manajemen Diri.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Self-Presentation (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Pembawaan Diri.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Pembawaan Diri.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Problem Solving & Innovation (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Pemecahan Masalah dan Inovasi.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Pemecahan Masalah dan Inovasi.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Professionalism (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Profesionalisme.pdf",
+      thumbnail: "/certificates/Modul Penilaian - Profesionalisme.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "Work Productivity Tools (Bahasa)",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Modul Penilaian - Sarana Pendukung Produktivitas Kerja.pdf",
+    thumbnail: "/certificates/Modul Penilaian - Sarana Pendukung Produktivitas Kerja.pdf",
     type: "pdf",
   },
-   {
+  {
     title: "JobReady: Keterampilan Kerja",
     issuer: "Wadhwani Foundation",
     year: "2026",
     file: "/certificates/Wadhwani Foundation Certificate.pdf",
+    thumbnail: "/certificates/Wadhwani Foundation Certificate.pdf",
     type: "pdf",
   },
-    {
+  {
     title: "Keselamatan dan Kesehatan Kerja",
     issuer: "International Labour Organization",
     year: "2024",
     file: "/certificates/Sertifikat E-Learning K3 Sirojul Kamal.pdf",
+    thumbnail: "/certificates/Sertifikat E-Learning K3 Sirojul Kamal.pdf",
     type: "pdf",
   },
-
-
 ];

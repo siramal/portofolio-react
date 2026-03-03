@@ -1,291 +1,213 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaFileDownload, FaEye, FaAward } from "react-icons/fa";
 import PdfModal from "./pdfModal";
-import { sectionTransition } from "../animations/variants";
 import { certificates } from "../data/certificates";
 
-function CertificateCard({ title, issuer, year, file }) {
+// 1. Konfigurasi Animasi & Warna
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 80, damping: 20 }
+  },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+};
+
+// 2. Definisi Komponen Anak (Harus di atas atau menggunakan function biasa agar tidak error 'not defined')
+function CertificateCard({ title, issuer, year, file, thumbnail }) {
   const [open, setOpen] = useState(false);
-  const isPdf = typeof file === "string" && file.toLowerCase().endsWith(".pdf");
 
-  const cardVariants = {
-    hover: {
-      y: -8,
-      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
-    },
+  const getCorrectPath = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http") || path.startsWith("/")) return path;
+    return `/certificates/${path}`;
   };
 
-  const handleDownload = (e) => {
-    e.stopPropagation();
-    // Try to download without navigating away from the SPA.
-    // Open in new tab as first attempt; if blocked or not downloadable, fetch blob as fallback.
-    const link = document.createElement("a");
-    link.href = file;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.download = `${title}.pdf`;
-    document.body.appendChild(link);
-    try {
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      // Fallback: fetch blob and force download
-      fetch(file)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${title}.pdf`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        })
-        .catch(() => {
-          // as last resort, navigate in new tab
-          window.open(file, "_blank", "noopener noreferrer");
-        });
-    }
-  };
+  const safeFileUrl = encodeURI(getCorrectPath(file));
 
   return (
-    <>
+    <div className="relative h-full">
       <motion.div
         variants={cardVariants}
-        whileHover="hover"
-        className="h-full relative"
+        layout
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        whileHover={{ y: -10, zIndex: 50, transition: { duration: 0.3 } }}
+        className="relative h-full group"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-xl transition flex flex-col h-full overflow-hidden relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500 to-blue-600 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500" />
 
-          {/* BADGE */}
-          <div className="absolute top-4 right-4 z-10">
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg whitespace-nowrap"
-            >
-              <FaAward size={12} /> Certificate
-            </motion.div>
-          </div>
+        <div className="relative h-full flex flex-col bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
 
-          {/* PREVIEW (TINGGI SAMA) */}
-          <div className="h-48 border-b bg-gray-100 dark:bg-gray-700 relative overflow-hidden group">
-            {isPdf ? (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900 dark:to-teal-800">
-                <div className="text-center">
-                  <FaFileDownload className="text-4xl text-teal-600 dark:text-teal-400 mx-auto mb-2" />
-                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">PDF Document</p>
+          {/* AREA PREVIEW: Hanya satu scrollbar */}
+          <div className="h-44 relative bg-white dark:bg-gray-800 overflow-hidden flex items-center justify-center">
+            {thumbnail ? (
+              thumbnail.toLowerCase().endsWith('.pdf') ? (
+                /* PDF PREVIEW DENGAN SATU SCROLLBAR CUSTOM */
+                <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-teal-500 scrollbar-track-transparent">
+                  <iframe
+                    src={`${thumbnail}#toolbar=0&navpanes=0&view=FitH`}
+                    className="w-full h-[600px] border-none block"
+                    style={{ pointerEvents: 'none' }} // Mencegah scrollbar internal iframe aktif
+                    title="preview"
+                  />
                 </div>
-              </div>
-            ) : (
-              (file && typeof file === "string") ? (
+              ) : (
                 <img
-                  src={file}
-                  alt={title || "Project preview"}
-                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                />) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">No preview available</div>
+                  src={thumbnail}
+                  alt={title}
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                />
               )
+            ) : (
+              /* Fallback */
+              <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-950 flex flex-col items-center justify-center p-6 text-center">
+                <FaAward className="text-4xl text-teal-500 mb-3 opacity-60" />
+                <div className="text-[10px] font-black text-teal-400/80 uppercase tracking-[0.2em]">{issuer}</div>
+              </div>
             )}
-
-            {/* Overlay dengan action buttons */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setOpen(true)}
-                className="bg-white text-teal-600 p-3 rounded-full shadow-lg hover:bg-teal-600 hover:text-white transition"
-                title="View Certificate"
-              >
-                <FaEye size={16} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={handleDownload}
-                className="bg-white text-teal-600 p-3 rounded-full shadow-lg hover:bg-teal-600 hover:text-white transition"
-                title="Download Certificate"
-              >
-                <FaFileDownload size={16} />
-              </motion.button>
-            </div>
           </div>
 
-          {/* CONTENT */}
-          <div className="p-5 flex flex-col flex-1">
-            <h3 className="font-semibold text-base line-clamp-2 dark:text-white mb-2">
+          {/* Bagian Content */}
+          <div className="p-5 flex flex-col flex-grow bg-white dark:bg-gray-900">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="h-[1.5px] w-3 bg-teal-500" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">
+                {issuer}
+              </p>
+            </div>
+
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 leading-tight mb-4 line-clamp-2">
               {title}
             </h3>
 
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center">
-                <span className="text-xs font-bold text-teal-600 dark:text-teal-400">
-                  {issuer ? String(issuer).charAt(0) : "?"}
-                </span>
+            <div className="mt-auto pt-4 border-t border-gray-50 dark:border-white/5 flex items-center justify-between">
+              <span className="text-[10px] font-bold text-gray-400">{year}</span>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setOpen(true)}
+                  className="text-[10px] font-black text-teal-600 dark:text-teal-400 hover:text-teal-500 transition-colors uppercase"
+                >
+                  View
+                </button>
+                <a href={safeFileUrl} download className="text-gray-400 hover:text-teal-500 transition-colors">
+                  <FaFileDownload size={16} />
+                </a>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{issuer || "Unknown issuer"}</p>
             </div>
-
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="inline-block text-xs bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 px-3 py-1 rounded-full w-fit mb-3 font-semibold"
-            >
-              {year}
-            </motion.span>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setOpen(true)}
-              className="mt-auto bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition font-medium"
-            >
-              View Certificate
-            </motion.button>
           </div>
         </div>
       </motion.div>
 
-      {/* MODAL */}
-      <PdfModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        file={file}
-        title={title}
-      />
-    </>
+      <AnimatePresence>
+        {open && (
+          <PdfModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            file={safeFileUrl}
+            title={title}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
-
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const fadeCard = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 18,
-    },
-  },
-};
-
-function CertificateSection() {
+// 3. Komponen Utama (Exported)
+export function CertificateSection() {
   const [filterIssuer, setFilterIssuer] = useState("All");
-  const [certLimit, setCertLimit] = useState(12);
 
-  // Get unique issuers for filter
-  const issuers = ["All", ...new Set(certificates.map(cert => cert.issuer))];
+  const data = Array.isArray(certificates) ? certificates : [];
+  const issuers = ["All", ...new Set(data.map(cert => cert.issuer.trim()))];
 
-  // Filter certificates
   const filteredCertificates = filterIssuer === "All"
-    ? certificates
-    : certificates.filter(cert => cert.issuer === filterIssuer);
+    ? data
+    : data.filter(cert => cert.issuer.trim() === filterIssuer);
 
   return (
-    <motion.section
-      id="certificate"
-      className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
-      variants={sectionTransition}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: false, amount: 0.3 }}
-    >
-      <div className="w-full px-6 md:px-16 lg:px-32 text-gray-800 dark:text-gray-200">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 dark:text-white">
-            Certificates
-          </h2>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 px-4 py-2 rounded-full text-sm font-semibold"
+    <section id="certificate" className="relative py-24 bg-white dark:bg-[#030712] overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] -z-10" />
+
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-teal-500 font-bold tracking-[0.3em] uppercase text-xs"
           >
-            {filteredCertificates.length} {filteredCertificates.length === 1 ? "Certificate" : "Certificates"}
-          </motion.div>
+            Achievements
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-black mt-4 dark:text-white"
+          >
+            Certifications<span className="text-teal-500">.</span>
+          </motion.h2>
         </div>
 
-        {/* Filter Buttons */}
-        <motion.div
-          className="flex flex-wrap justify-center gap-3 mb-12"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        {/* Animated Filter Bar */}
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
           {issuers.map((issuer) => (
-            <motion.button
+            <button
               key={issuer}
               onClick={() => setFilterIssuer(issuer)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`px-6 py-2 rounded-full font-medium transition ${filterIssuer === issuer
-                  ? "bg-teal-600 text-white shadow-lg"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className={`relative px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${filterIssuer === issuer
+                  ? "text-white"
+                  : "text-gray-500 hover:text-teal-500 dark:text-gray-400"
                 }`}
             >
+              {filterIssuer === issuer && (
+                <motion.div
+                  layoutId="activeFilter"
+                  className="absolute inset-0 bg-teal-600 rounded-full -z-10"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
               {issuer}
-            </motion.button>
+            </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Certificates Grid */}
+        {/* Responsive Grid */}
         <motion.div
-          className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-          variants={staggerContainer}
+          variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
-          key={filterIssuer}
+          viewport={{ once: true }}
+          layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          {filteredCertificates.slice(0, certLimit).map((item, index) => (
-            <motion.div key={index} variants={fadeCard}>
-              <CertificateCard {...item} />
-            </motion.div>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {filteredCertificates.map((item) => (
+              // Sekarang CertificateCard sudah terdefinisi dengan benar di atas
+              <CertificateCard key={item.title} {...item} />
+            ))}
+          </AnimatePresence>
         </motion.div>
 
-        {filteredCertificates.length > certLimit && (
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setCertLimit((c) => c + 12)}
-              className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-            >
-              Show more
-            </button>
-          </div>
-        )}
-
-        {/* Empty State */}
         {filteredCertificates.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
+            className="text-center py-20"
           >
-            <p className="text-gray-500 dark:text-gray-400">
-              Tidak ada sertifikat untuk filter ini
-            </p>
+            <p className="text-gray-400 italic">No certificates found in this category.</p>
           </motion.div>
         )}
       </div>
-    </motion.section>
+    </section>
   );
 }
-
-export default CertificateCard;
-export { CertificateSection };
