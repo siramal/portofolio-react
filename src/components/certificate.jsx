@@ -185,4 +185,4 @@ export function CertificateSection() {
       </div>
     </motion.section>
   );
-}s
+}

@@ -64,7 +64,7 @@ export default function BaseCard({ title, subtitle, year, thumbnail, onView, act
                 <span className="relative z-10">View</span>
                 <FaArrowRight className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
               </motion.button>
-g
+
               <div className="flex items-center gap-3 border-l border-gray-100 dark:border-white/10 pl-4">
                 {actions}
               </div>
