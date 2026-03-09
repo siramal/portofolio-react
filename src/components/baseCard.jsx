@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaAward, FaCode, FaArrowRight } from "react-icons/fa"; // Tambahkan icon panah
+import { FaAward, FaCode, FaArrowRight } from "react-icons/fa";
 
 export default function BaseCard({ title, subtitle, year, thumbnail, onView, actions, type = "certificate" }) {
   const isPdf = thumbnail?.toLowerCase().endsWith('.pdf');
@@ -19,10 +19,21 @@ export default function BaseCard({ title, subtitle, year, thumbnail, onView, act
         <div className="h-48 relative bg-gray-50 dark:bg-black/40 overflow-hidden flex items-center justify-center">
           {thumbnail ? (
             isPdf ? (
-              <div className="w-full h-full overflow-y-auto scrollbar-none pointer-events-none">
+              /* CONTAINER DENGAN SCROLLBAR DISEMBUNYIKAN */
+              <div 
+                className="w-full h-full overflow-y-auto pointer-events-none bg-white"
+                style={{
+                  msOverflowStyle: 'none',  /* IE and Edge */
+                  scrollbarWidth: 'none',   /* Firefox */
+                }}
+              >
+                {/* Style tag internal untuk Chrome/Safari */}
+                <style>{`
+                  .hide-scrollbar::-webkit-scrollbar { display: none; }
+                `}</style>
                 <iframe 
                   src={`${thumbnail}#toolbar=0&navpanes=0&view=FitH`} 
-                  className="w-full h-[600px] border-none block opacity-80 group-hover:opacity-100 transition-opacity" 
+                  className="w-full h-[600px] border-none block opacity-80 group-hover:opacity-100 transition-opacity hide-scrollbar" 
                   title="preview"
                 />
               </div>
@@ -54,7 +65,6 @@ export default function BaseCard({ title, subtitle, year, thumbnail, onView, act
             <span className="text-xs font-medium text-gray-400 font-mono tracking-tighter">{year}</span>
             
             <div className="flex items-center gap-4">
-              {/* TOMBOL VIEW YANG DIBAGUSKAN */}
               <motion.button 
                 onClick={onView}
                 whileHover={{ scale: 1.05 }}
